@@ -2,14 +2,14 @@
 from osgeo import gdal
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
-from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import VotingClassifier
 from sklearn.tree import DecisionTreeClassifier
+import time
+
 # Open the GeoTIFF files using GDAL
 datasetTrainingGT = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2A_MSIL1C_20220516_Train_GT.tif')
 
@@ -64,7 +64,6 @@ dataTraining1d = dataTraining1d[mask]
 trainGT1d = trainGT1d[mask]
 
 #Normalize Data between 0 and 1 before using
-from sklearn.model_selection import train_test_split
 dataTest1d = dataTest1d.astype(float) / 10000
 dataTraining1d = dataTraining1d.astype(float) / 10000
 
@@ -77,16 +76,12 @@ y_Train = trainGT1d
 # Split the data into training and validation sets
 X_train, X_val, y_train, y_val = train_test_split(X_Train, y_Train, stratify = y_Train,test_size=0.010)
 
-
-
-
 rf = RandomForestClassifier(n_estimators=100, n_jobs=-1,random_state=42)
 gb = GradientBoostingClassifier()
 dt = DecisionTreeClassifier()
 
 vs = VotingClassifier(estimators=[('rf', rf), ('gb', gb), ('dt', dt)], voting='soft')
 
-import time
 
 start_time = time.time()
 

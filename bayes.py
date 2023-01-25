@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
+import time
+from sklearn.model_selection import train_test_split
 
 # Open the GeoTIFF files using GDAL
 datasetTrainingGT = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2A_MSIL1C_20220516_Train_GT.tif')
@@ -62,10 +64,8 @@ dataTraining1d = dataTraining1d[mask]
 trainGT1d = trainGT1d[mask]
 
 #Normalize Data between 0 and 1 before using
-from sklearn.model_selection import train_test_split
 dataTest1d = dataTest1d.astype(float) / 10000
 dataTraining1d = dataTraining1d.astype(float) / 10000
-
 
 
 X_Train = dataTraining1d
@@ -77,15 +77,11 @@ X_train, X_val, y_train, y_val = train_test_split(X_Train, y_Train, stratify = t
 
 gnb = GaussianNB()
 
-import time
-
 start_time = time.time()
 
 gnb.fit(X_train, y_train.ravel())
 
 elapsed_time = time.time() - start_time
-
-
 
 y_pred = gnb.predict(X_val)
 y_pred = y_pred.reshape(-1, 1)

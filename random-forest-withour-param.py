@@ -2,11 +2,11 @@
 from osgeo import gdal
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
-from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+import time
+
 
 # Open the GeoTIFF files using GDAL
 datasetTrainingGT = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2A_MSIL1C_20220516_Train_GT.tif')
@@ -62,7 +62,6 @@ dataTraining1d = dataTraining1d[mask]
 trainGT1d = trainGT1d[mask]
 
 #Normalize Data between 0 and 1 before using
-from sklearn.model_selection import train_test_split
 dataTest1d = dataTest1d.astype(float) / 10000
 dataTraining1d = dataTraining1d.astype(float) / 10000
 
@@ -76,8 +75,6 @@ X_train, X_val, y_train, y_val = train_test_split(X_Train, y_Train, stratify = y
 
 
 rf = RandomForestClassifier(n_jobs=-1)
-
-import time
 
 start_time = time.time()
 

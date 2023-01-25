@@ -7,6 +7,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 # Open the GeoTIFF files using GDAL
 datasetTrainingGT = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2A_MSIL1C_20220516_Train_GT.tif')
@@ -41,7 +46,6 @@ train_label_data.to_csv('train.csv')
 
 np.save('train.npy', dataTraining1d)
 
-
 datasetTest = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2B_MSIL1C_20220528_Test.tif')
 dataTest2d = datasetTest.ReadAsArray()
 dataTest2d = np.swapaxes(dataTest2d, 0, 2)
@@ -62,9 +66,6 @@ dataTraining1d = dataTraining1d[mask]
 trainGT1d = trainGT1d[mask]
 
 
-from sklearn.model_selection import train_test_split
-
-
 X_Val, X_Train, y_val, y_Train = train_test_split(dataTraining1d, trainGT1d, stratify=trainGT1d, test_size=0.30)
 
 mask = dataTraining1d[:,3] != 0
@@ -74,27 +75,14 @@ dataTraining1d = dataTraining1d[mask]
 trainGT1d = trainGT1d[mask]
 
 #Normalize Data between 0 and 1 before using
-from sklearn.model_selection import train_test_split
 dataTest1d = dataTest1d.astype(float) / 10000
 dataTraining1d = dataTraining1d.astype(float) / 10000
-
-
 
 X_Train = dataTraining1d
 y_Train = trainGT1d
 
-from sklearn.model_selection import cross_val_score
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
-
 
 clf = KNeighborsClassifier(n_neighbors=1)
-
-import numpy as np
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-
 
 X_train, X_test, y_train, y_test = train_test_split(dataTraining1d, trainGT1d, test_size=0.010)
 
@@ -105,7 +93,6 @@ rf.fit(X_train, y_train.ravel())
 y_pred = rf.predict(X_test)
 prediction = rf.predict(dataTest1d)
 
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred, average='weighted')

@@ -2,12 +2,11 @@
 from osgeo import gdal
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
+import time
+
 # Open the GeoTIFF files using GDAL
 datasetTrainingGT = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2A_MSIL1C_20220516_Train_GT.tif')
 
@@ -41,7 +40,6 @@ train_label_data.to_csv('train.csv')
 
 np.save('train.npy', dataTraining1d)
 
-
 datasetTest = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2B_MSIL1C_20220528_Test.tif')
 dataTest2d = datasetTest.ReadAsArray()
 dataTest2d = np.swapaxes(dataTest2d, 0, 2)
@@ -62,11 +60,8 @@ dataTraining1d = dataTraining1d[mask]
 trainGT1d = trainGT1d[mask]
 
 #Normalize Data between 0 and 1 before using
-from sklearn.model_selection import train_test_split
 dataTest1d = dataTest1d.astype(float) / 10000
 dataTraining1d = dataTraining1d.astype(float) / 10000
-
-
 
 X_Train = dataTraining1d
 y_Train = trainGT1d
@@ -79,15 +74,12 @@ X_train, X_val, y_train, y_val = train_test_split(X_Train, y_Train, stratify = t
 
 sgd = SGDClassifier(loss='hinge', max_iter=100, tol=1e-3, random_state=42)
 
-import time
 
 start_time = time.time()
 
 sgd.fit(X_train, y_train.ravel())
 
 elapsed_time = time.time() - start_time
-
-
 
 y_pred = sgd.predict(X_val)
 # Evaluate the accuracy of the classifier
