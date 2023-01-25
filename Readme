@@ -1,0 +1,1 @@
+If you want to normalize data and exludide zero values in train,test split enter the params as X_Train,y_Train otherwise it will be dataTraining1d,trainGT1d
