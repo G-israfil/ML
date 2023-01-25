@@ -1,1 +1,3 @@
 If you want to normalize data and exludide zero values in train,test split enter the params as X_Train,y_Train otherwise it will be dataTraining1d,trainGT1d
+https://www.kaggle.com/competitions/ayb-ceng463-machine-learning-project-fall-2022/overview
+https://piazza.com/class/l8vbdnh98wk4nf
