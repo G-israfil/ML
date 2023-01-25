@@ -2,9 +2,12 @@
 from osgeo import gdal
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+
 # Open the GeoTIFF files using GDAL
 datasetTrainingGT = gdal.Open('C:/Users/gozud/Desktop/MLProject/ProjectFiles/S2A_MSIL1C_20220516_Train_GT.tif')
 
@@ -58,48 +61,49 @@ mask = dataTraining1d[:,3] != 0
 dataTraining1d = dataTraining1d[mask]
 trainGT1d = trainGT1d[mask]
 
-#Normalize Data between 0 and 1 before using
+
 from sklearn.model_selection import train_test_split
-dataTest1d = dataTest1d.astype(float) / 10000
-dataTraining1d = dataTraining1d.astype(float) / 10000
 
 
-
-X_Train = dataTraining1d
-y_Train = trainGT1d
-#--------------------------------------------------------------------------------
-
-X_train, X_val, y_train, y_val = train_test_split(dataTraining1d, trainGT1d, stratify = trainGT1d,test_size=0.010)
+X_Val, X_Train, y_val, y_Train = train_test_split(dataTraining1d, trainGT1d, stratify=trainGT1d, test_size=0.30)
 
 
-lg = LogisticRegression()
+from sklearn.model_selection import cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
 
-import time
+# Create the KNN classifier with k=1
+clf = KNeighborsClassifier(n_neighbors=1)
 
-start_time = time.time()
+from sklearn.ensemble import RandomForestClassifier
 
-lg.fit(X_train, y_train.ravel())
+# Use cross-validation to evaluate the model's accuracy
+# scores = cross_val_score(clf, dataTraining1d, np.ravel(trainGT1d), cv=5)
+# acc = scores.mean()
 
-elapsed_time = time.time() - start_time
+# Fit the classifier to the data
+clf.fit(dataTraining1d,trainGT1d.ravel())
 
-y_pred = lg.predict(X_val)
-y_pred = y_pred.reshape(-1, 1)
-accuracy = accuracy_score(y_val, y_pred.ravel())
+# Predict labels for new data
+test_predictions = clf.predict(dataTest1d)
+predictions = clf.predict(trainGT1d)
+
+# Evaluate the accuracy of the classifier
+accuracy = accuracy_score(trainGT1d, test_predictions[:967005])
 print(f'Accuracy: {accuracy:.2%}')
 
+# Compute the confusion matrix
 labels = ['Tree cover', 'Shrubland', 'Grassland', 'Cropland', 'Built-up', 'Bare/sparse vegetation', 'Snow and ice','Permanent water bodies', 'Herbaceous wetland']
 
-cm = confusion_matrix(y_val, y_pred.ravel())
-print(classification_report(y_val, y_pred,target_names=labels))
+cm = confusion_matrix(trainGT1d, predictions)
+print(classification_report(trainGT1d, predictions,target_names=labels))
 # print(cm)
 cmd = ConfusionMatrixDisplay(cm, display_labels=labels)
 cmd.plot()
 
-predictions = lg.predict(dataTest1d)
 df = pd.DataFrame(predictions)
 df.columns=['Code']
 df.insert(0, 'Id', range(1, len(df) + 1))
 
 # Export the DataFrame as a CSV file
 df.to_csv('C:/Users/gozud/Desktop/MLProject/ProjectFiles/DataCSV/submission.csv', index=False)
-

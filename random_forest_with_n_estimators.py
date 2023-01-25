@@ -119,5 +119,7 @@ print("F1-score: ", f1)
 
 df = pd.DataFrame(prediction)
 df.columns=['Code']
+df.insert(0, 'Id', range(1, len(df) + 1))
+
 # Export the DataFrame as a CSV file
-df.to_csv('C:/Users/gozud/Desktop/MLProject/ProjectFiles/DataCSV/submission.csv')
+df.to_csv('C:/Users/gozud/Desktop/MLProject/ProjectFiles/DataCSV/submission.csv', index=False)

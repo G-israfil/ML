@@ -111,8 +111,10 @@ cmd.plot()
 
 df = pd.DataFrame(predictions)
 df.columns=['Code']
+df.insert(0, 'Id', range(1, len(df) + 1))
+
 # Export the DataFrame as a CSV file
-df.to_csv('C:/Users/gozud/Desktop/MLProject/ProjectFiles/submission.csv')
+df.to_csv('C:/Users/gozud/Desktop/MLProject/ProjectFiles/DataCSV/submission.csv', index=False)
 
 
 
